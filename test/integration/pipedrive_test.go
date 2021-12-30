@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/genert/pipedrive-api/pipedrive"
+	"github.com/polytomic/pipedrive-api"
 )
 
 var (

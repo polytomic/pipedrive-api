@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/genert/pipedrive-api/pipedrive"
 	"github.com/go-test/deep"
+	"github.com/polytomic/pipedrive-api"
 )
 
 func TestCurrenciesService_List(t *testing.T) {
