@@ -19,7 +19,7 @@ type PersonField struct {
 	Name               string      `json:"name"`
 	OrderNr            int         `json:"order_nr"`
 	PicklistData       interface{} `json:"picklist_data,omitempty"`
-	FieldType          string      `json:"field_type"`
+	FieldType          FieldType   `json:"field_type"`
 	AddTime            string      `json:"add_time"`
 	UpdateTime         string      `json:"update_time"`
 	ActiveFlag         bool        `json:"active_flag"`
@@ -37,10 +37,7 @@ type PersonField struct {
 	MandatoryFlag      bool        `json:"mandatory_flag"`
 	DisplayField       string      `json:"display_field,omitempty"`
 	Autocomplete       string      `json:"autocomplete,omitempty"`
-	Options            []struct {
-		ID    int    `json:"id"`
-		Label string `json:"label"`
-	} `json:"options,omitempty"`
+	Options            []Option    `json:"options,omitempty"`
 }
 
 // PersonFieldsResponse represents multiple person fields response.

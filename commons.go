@@ -126,3 +126,8 @@ const (
 type SearchOptions struct {
 	Term string `url:"term,omitempty"`
 }
+
+type Option struct {
+	ID    int    `json:"id"`
+	Label string `json:"label"`
+}

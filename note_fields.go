@@ -11,12 +11,6 @@ import (
 // Pipedrive API dcos: https://developers.pipedrive.com/docs/api/v1/#!/ActivityTypes
 type NoteFieldsService service
 
-// Option represents a Pipedrive option for note field.
-type Option struct {
-	ID    int    `json:"id,omitempty"`
-	Label string `json:"label,omitempty"`
-}
-
 // NoteField represents a Pipedrive note field.
 type NoteField struct {
 	ID                   int      `json:"id,omitempty"`
