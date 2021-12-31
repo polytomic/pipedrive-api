@@ -71,7 +71,6 @@ type Organization struct {
 	AddressFormattedAddress         string      `json:"address_formatted_address"`
 	OwnerName                       string      `json:"owner_name"`
 	CcEmail                         string      `json:"cc_email"`
-	Phone                           string      `json:"3eb8874b7a3c9f3fe4f5b6435d4d009b15ec0c77"`
 }
 
 func (o Organization) String() string {

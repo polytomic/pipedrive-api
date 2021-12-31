@@ -104,23 +104,6 @@ type Deal struct {
 	CcEmail                  string      `json:"cc_email"`
 	OrgHidden                bool        `json:"org_hidden"`
 	PersonHidden             bool        `json:"person_hidden"`
-	OfflineCommunication     string      `json:"b556c5618b88cd3d33f99b996b5b2fdbc8ba3c7e"`
-	ServicePrice             float64     `json:"6906ddfb72aaef6810b35703de142db0f435c314"`
-	AgencyInCharge           struct {
-		Name        string      `json:"name"`
-		PeopleCount int         `json:"people_count"`
-		OwnerID     int         `json:"owner_id"`
-		Address     interface{} `json:"address"`
-		CcEmail     string      `json:"cc_email"`
-		Value       float32     `json:"value"`
-	} `json:"eb2a2df8945c29118a01d324c58fbf6cef7bfd43"`
-	WantedStartTime     string `json:"a3114acce61bb930180af173b395d76f42af8794"`
-	RequirementAnalysis string `json:"56d3d40c37c0db60fff576ae73ba2fea0d58dc09"`
-	DepartureCurrentCT  string `json:"ffd2a712d781417ef17a33b3540d3ecd8d945f76"`
-	ArrivalNextCT       string `json:"f5bb67b24aec5f9733be8b3402bf1fe5b1ac6ed6"`
-	LeadSource          uint   `json:"5d4fbabc9b032aeb3df515d9c66994d6892ee062"`
-	TemporaryLink       string `json:"4fe88fad67d8dcbc17d18d9ee1faac55122249fd"`
-	RideCosts           string `json:"31443a48d1405182dfccac9bf378bbe8216ffc9a"`
 }
 
 func (d Deal) String() string {

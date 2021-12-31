@@ -86,6 +86,7 @@ type service struct {
 type Config struct {
 	APIKey        string
 	CompanyDomain string
+	Client        *http.Client
 }
 
 type Rate struct {
@@ -304,8 +305,12 @@ func (c *Client) SetOptions(options ...func(*Client) error) error {
 func NewClient(options *Config) *Client {
 	baseURL, _ := url.Parse(defaultBaseUrl)
 
+	if options.Client == nil {
+		options.Client = http.DefaultClient
+	}
+
 	c := &Client{
-		client:  http.DefaultClient,
+		client:  options.Client,
 		BaseURL: baseURL,
 		apiKey:  options.APIKey,
 	}
