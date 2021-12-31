@@ -2,6 +2,7 @@ package pipedrive
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -91,8 +92,8 @@ func (p Person) String() string {
 	return Stringify(p)
 }
 
-// PersonsRespose represents multiple persons response.
-type PersonsRespose struct {
+// PersonsResponse represents multiple persons response.
+type PersonsResponse struct {
 	Success        bool           `json:"success"`
 	Data           []Person       `json:"data"`
 	AdditionalData AdditionalData `json:"additional_data"`
@@ -119,14 +120,14 @@ type PersonAddFollowerResponse struct {
 // List all persons.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons
-func (s *PersonsService) List(ctx context.Context) (*PersonsRespose, *Response, error) {
+func (s *PersonsService) List(ctx context.Context) (*PersonsResponse, *Response, error) {
 	req, err := s.client.NewRequest(http.MethodGet, "/persons", nil, nil)
 
 	if err != nil {
 		return nil, nil, err
 	}
 
-	var record *PersonsRespose
+	var record *PersonsResponse
 
 	resp, err := s.client.Do(ctx, req, &record)
 
@@ -135,6 +136,49 @@ func (s *PersonsService) List(ctx context.Context) (*PersonsRespose, *Response, 
 	}
 
 	return record, resp, nil
+}
+
+type PersonSearchParams struct {
+	Term           string   `url:"term,omitempty"`
+	Fields         []string `url:"fields,omitempty,comma"`
+	ExactMatch     bool     `url:"exact_match,omitempty"`
+	OgranizationID int      `url:"ogranization_id,omitempty"`
+	IncludeFields  string   `url:"include_fields,omitempty"`
+	Start          int      `url:"start,omitempty"`
+	Limit          int      `url:"limit,omitempty"`
+}
+
+type PersonSearchResult struct {
+	ResultScore float64
+	Item        Person
+}
+
+type PersonsSearchResponse struct {
+	Success bool `json:"success"`
+	Data    struct {
+		Items []PersonSearchResult `json:"items"`
+	} `json:"data"`
+	AdditionalData AdditionalData `json:"additional_data"`
+}
+
+// Search for person(s)
+//
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/Persons#searchPersons
+func (s *PersonsService) Search(ctx context.Context, searchParams PersonSearchParams) (*PersonsSearchResponse, *Response, error) {
+	req, err := s.client.NewRequest(http.MethodGet, "/persons/search", searchParams, nil)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response *PersonsSearchResponse
+	resp, err := s.client.Do(ctx, req, &response)
+
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response, resp, nil
 }
 
 // AddFollower adds a follower to person.
@@ -166,39 +210,77 @@ func (s *PersonsService) AddFollower(ctx context.Context, id int, userID int) (*
 // PersonCreateOptions specifices the optional parameters to the
 // PersonsService.Create method.
 type PersonCreateOptions struct {
-	Name      string    `json:"name"`
-	OwnerID   uint      `json:"owner_id"`
-	OrgID     uint      `json:"org_id"`
-	Email     string    `json:"email"`
-	Phone     string    `json:"phone"`
-	VisibleTo VisibleTo `json:"visible_to"`
+	Name      string    `json:"name,omitempty"`
+	OwnerID   uint      `json:"owner_id,omitempty"`
+	OrgID     uint      `json:"org_id,omitempty"`
+	Email     string    `json:"email,omitempty"`
+	Phone     string    `json:"phone,omitempty"`
+	VisibleTo VisibleTo `json:"visible_to,omitempty"`
 	AddTime   Timestamp `json:"add_time"`
 	Label     uint      `json:"label"`
+
+	CustomFields map[string]interface{} `json:"-"`
+}
+
+func (p PersonCreateOptions) MarshalJSON() ([]byte, error) {
+	fields := map[string]interface{}{}
+	for k, v := range p.CustomFields {
+		fields[k] = v
+	}
+	if p.Name != "" {
+		fields["name"] = p.Name
+	}
+	if p.OwnerID != 0 {
+		fields["owner_id"] = p.OwnerID
+	}
+	if p.OrgID != 0 {
+		fields["org_id"] = p.OrgID
+	}
+	if p.Email != "" {
+		fields["email"] = p.Email
+	}
+	if p.Phone != "" {
+		fields["phone"] = p.Phone
+	}
+	if p.VisibleTo != 0 {
+		fields["visible_to"] = p.VisibleTo
+	}
+	if !p.AddTime.IsZero() {
+		fields["add_time"] = p.AddTime
+	}
+	if p.Label != 0 {
+		fields["label"] = p.Label
+	}
+
+	return json.Marshal(fields)
 }
 
 // Create a new person.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/post_persons
 func (s *PersonsService) Create(ctx context.Context, opt *PersonCreateOptions) (*PersonResponse, *Response, error) {
-	req, err := s.client.NewRequest(http.MethodPost, "/persons", nil, struct {
-		Name      string    `json:"name"`
-		OwnerID   uint      `json:"owner_id"`
-		OrgID     uint      `json:"org_id"`
-		Email     string    `json:"email"`
-		Phone     string    `json:"phone"`
-		Label     uint      `json:"label"`
-		VisibleTo VisibleTo `json:"visible_to"`
-		AddTime   string    `json:"add_time"`
+	payload := struct {
+		Name      string    `json:"name,omitempty"`
+		OwnerID   uint      `json:"owner_id,omitempty"`
+		OrgID     uint      `json:"org_id,omitempty"`
+		Email     string    `json:"email,omitempty"`
+		Phone     string    `json:"phone,omitempty"`
+		Label     uint      `json:"label,omitempty"`
+		VisibleTo VisibleTo `json:"visible_to,omitempty"`
+		AddTime   string    `json:"add_time,omitempty"`
 	}{
-		opt.Name,
-		opt.OwnerID,
-		opt.OrgID,
-		opt.Email,
-		opt.Phone,
-		opt.Label,
-		opt.VisibleTo,
-		opt.AddTime.FormatFull(),
-	})
+		Name:      opt.Name,
+		OwnerID:   opt.OwnerID,
+		OrgID:     opt.OrgID,
+		Email:     opt.Email,
+		Phone:     opt.Phone,
+		Label:     opt.Label,
+		VisibleTo: opt.VisibleTo,
+	}
+	if !opt.AddTime.Time.IsZero() {
+		payload.AddTime = opt.AddTime.FormatFull()
+	}
+	req, err := s.client.NewRequest(http.MethodPost, "/persons", nil, payload)
 
 	if err != nil {
 		return nil, nil, err
@@ -218,14 +300,41 @@ func (s *PersonsService) Create(ctx context.Context, opt *PersonCreateOptions) (
 // PersonUpdateOptions specifices the optional parameters to the
 // PersonUpdateOptions.Update method.
 type PersonUpdateOptions struct {
-	Name            string    `json:"name,omitempty"`
-	OwnerID         uint      `json:"owner_id,omitempty"`
-	OrgID           uint      `json:"org_id,omitempty"`
-	Email           []Email   `json:"email,omitempty"`
-	Phone           string    `json:"phone,omitempty"`
-	VisibleTo       VisibleTo `json:"visible_to,omitempty"`
-	BillingAddress  string    `json:"d5d6ecba25dd34146d3b9d0f1bb34dedf384143a,omitempty"`
-	DeliveryAddress string    `json:"fb3875ae1de17d63a1a0a9a7643bb677b95ae7fb,omitempty"`
+	Name      string    `json:"name,omitempty"`
+	OwnerID   uint      `json:"owner_id,omitempty"`
+	OrgID     uint      `json:"org_id,omitempty"`
+	Email     []Email   `json:"email,omitempty"`
+	Phone     string    `json:"phone,omitempty"`
+	VisibleTo VisibleTo `json:"visible_to,omitempty"`
+
+	CustomFields map[string]interface{} `json:"-"`
+}
+
+func (p PersonUpdateOptions) MarshalJSON() ([]byte, error) {
+	fields := map[string]interface{}{}
+	for k, v := range p.CustomFields {
+		fields[k] = v
+	}
+	if p.Name != "" {
+		fields["name"] = p.Name
+	}
+	if p.OwnerID != 0 {
+		fields["owner_id"] = p.OwnerID
+	}
+	if p.OrgID != 0 {
+		fields["org_id"] = p.OrgID
+	}
+	if len(p.Email) > 0 {
+		fields["email"] = p.Email
+	}
+	if p.Phone != "" {
+		fields["phone"] = p.Phone
+	}
+	if p.VisibleTo != 0 {
+		fields["visible_to"] = p.VisibleTo
+	}
+
+	return json.Marshal(fields)
 }
 
 // Update a specific person.
