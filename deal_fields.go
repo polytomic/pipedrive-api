@@ -14,32 +14,29 @@ type DealFieldsService service
 
 // DealField represents a Pipedrive deal.
 type DealField struct {
-	ID                 int         `json:"id"`
-	Key                string      `json:"key"`
-	Name               string      `json:"name"`
-	OrderNr            int         `json:"order_nr,omitempty"`
-	PicklistData       interface{} `json:"picklist_data,omitempty"`
-	FieldType          string      `json:"field_type"`
-	AddTime            string      `json:"add_time,omitempty"`
-	UpdateTime         string      `json:"update_time,omitempty"`
-	ActiveFlag         bool        `json:"active_flag"`
-	EditFlag           bool        `json:"edit_flag"`
-	IndexVisibleFlag   bool        `json:"index_visible_flag,omitempty"`
-	DetailsVisibleFlag bool        `json:"details_visible_flag,omitempty"`
-	AddVisibleFlag     bool        `json:"add_visible_flag,omitempty"`
-	ImportantFlag      bool        `json:"important_flag,omitempty"`
-	BulkEditAllowed    bool        `json:"bulk_edit_allowed,omitempty"`
-	SearchableFlag     bool        `json:"searchable_flag,omitempty"`
-	FilteringAllowed   bool        `json:"filtering_allowed,omitempty"`
-	SortableFlag       bool        `json:"sortable_flag,omitempty"`
-	UseField           string      `json:"use_field,omitempty"`
-	Link               string      `json:"link,omitempty"`
-	MandatoryFlag      bool        `json:"mandatory_flag"`
-	IsSubfield         bool        `json:"is_subfield,omitempty"`
-	Options            []struct {
-		ID    string `json:"id"`
-		Label string `json:"label"`
-	} `json:"options,omitempty"`
+	ID                        int         `json:"id"`
+	Key                       string      `json:"key"`
+	Name                      string      `json:"name"`
+	OrderNr                   int         `json:"order_nr,omitempty"`
+	PicklistData              interface{} `json:"picklist_data,omitempty"`
+	FieldType                 FieldType   `json:"field_type"`
+	AddTime                   string      `json:"add_time,omitempty"`
+	UpdateTime                string      `json:"update_time,omitempty"`
+	ActiveFlag                bool        `json:"active_flag"`
+	EditFlag                  bool        `json:"edit_flag"`
+	IndexVisibleFlag          bool        `json:"index_visible_flag,omitempty"`
+	DetailsVisibleFlag        bool        `json:"details_visible_flag,omitempty"`
+	AddVisibleFlag            bool        `json:"add_visible_flag,omitempty"`
+	ImportantFlag             bool        `json:"important_flag,omitempty"`
+	BulkEditAllowed           bool        `json:"bulk_edit_allowed,omitempty"`
+	SearchableFlag            bool        `json:"searchable_flag,omitempty"`
+	FilteringAllowed          bool        `json:"filtering_allowed,omitempty"`
+	SortableFlag              bool        `json:"sortable_flag,omitempty"`
+	UseField                  string      `json:"use_field,omitempty"`
+	Link                      string      `json:"link,omitempty"`
+	MandatoryFlag             bool        `json:"mandatory_flag"`
+	IsSubfield                bool        `json:"is_subfield,omitempty"`
+	Options                   []Option    `json:"options,omitempty"`
 	BulkEditAllowedConditions struct {
 		Status string `json:"status"`
 	} `json:"bulk_edit_allowed_conditions,omitempty"`

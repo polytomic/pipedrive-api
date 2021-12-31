@@ -2,6 +2,7 @@ package pipedrive
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -250,18 +251,58 @@ func (s *DealService) Merge(ctx context.Context, id int, opt *DealsMergeOptions)
 // DealsUpdateOptions specifices the optional parameters to the
 // DealService.Update method.
 type DealsUpdateOptions struct {
-	Title               string `json:"title,omitempty"`
-	Value               string `json:"value,omitempty"`
-	Currency            string `json:"currency,omitempty"`
-	UserID              uint   `json:"user_id,omitempty"`
-	PersonID            uint   `json:"person_id,omitempty"`
-	OrganizationID      uint   `json:"org_id,omitempty"`
-	StageID             uint   `json:"stage_id,omitempty"`
-	Status              string `json:"status,omitempty"`
-	LostReason          string `json:"lost_reason,omitempty"`
-	VisibleTo           uint   `json:"visible_to,omitempty"`
-	RequirementAnalysis string `json:"56d3d40c37c0db60fff576ae73ba2fea0d58dc09,omitempty"`
-	TemporaryLink       string `json:"4fe88fad67d8dcbc17d18d9ee1faac55122249fd,omitempty"`
+	Title          string `json:"title,omitempty"`
+	Value          string `json:"value,omitempty"`
+	Currency       string `json:"currency,omitempty"`
+	UserID         uint   `json:"user_id,omitempty"`
+	PersonID       uint   `json:"person_id,omitempty"`
+	OrganizationID uint   `json:"org_id,omitempty"`
+	StageID        uint   `json:"stage_id,omitempty"`
+	Status         string `json:"status,omitempty"`
+	LostReason     string `json:"lost_reason,omitempty"`
+	VisibleTo      uint   `json:"visible_to,omitempty"`
+
+	CustomFields map[string]interface{} `json:"-"`
+}
+
+func (d DealsUpdateOptions) MarshalJSON() ([]byte, error) {
+	fields := map[string]interface{}{}
+	for k, v := range d.CustomFields {
+		fields[k] = v
+	}
+
+	if d.Title != "" {
+		fields["title"] = d.Title
+	}
+	if d.Value != "" {
+		fields["value"] = d.Value
+	}
+	if d.Currency != "" {
+		fields["currency"] = d.Currency
+	}
+	if d.UserID != 0 {
+		fields["user_id"] = d.UserID
+	}
+	if d.PersonID != 0 {
+		fields["person_id"] = d.PersonID
+	}
+	if d.OrganizationID != 0 {
+		fields["org_id"] = d.OrganizationID
+	}
+	if d.StageID != 0 {
+		fields["stage_id"] = d.StageID
+	}
+	if d.Status != "" {
+		fields["status"] = d.Status
+	}
+	if d.LostReason != "" {
+		fields["lost_reason"] = d.LostReason
+	}
+	if d.VisibleTo != 0 {
+		fields["visible_to"] = d.VisibleTo
+	}
+
+	return json.Marshal(fields)
 }
 
 // Update a deal.
@@ -351,63 +392,73 @@ func (s *DealService) DeleteAttachedProduct(ctx context.Context, dealID int, pro
 // DealCreateOptions specifices the optional parameters to the
 // DealsService.Create method.
 type DealCreateOptions struct {
-	Title               string    `json:"title"`
-	Value               string    `json:"value"`
-	Currency            string    `json:"currency"`
-	UserID              uint      `json:"user_id"`
-	PersonID            uint      `json:"person_id"`
-	OrgID               uint      `json:"org_id"`
-	StageID             uint      `json:"stage_id"`
-	Status              string    `json:"status"`
-	Probability         uint      `json:"probability"`
-	LostReason          string    `json:"lost_reason"`
-	AddTime             Timestamp `json:"add_time"`
-	VisibleTo           VisibleTo `json:"visible_to"`
-	RequirementAnalysis string    `json:"56d3d40c37c0db60fff576ae73ba2fea0d58dc09"`
-	WantedStartTime     Timestamp `json:"a3114acce61bb930180af173b395d76f42af8794"`
-	TemporaryLink       string    `json:"4fe88fad67d8dcbc17d18d9ee1faac55122249fd,omitempty"`
-	LeadSource          uint      `json:"5d4fbabc9b032aeb3df515d9c66994d6892ee062,omitempty"`
+	Title       string    `json:"title,omitempty"`
+	Value       string    `json:"value,omitempty"`
+	Currency    string    `json:"currency,omitempty"`
+	UserID      uint      `json:"user_id,omitempty"`
+	PersonID    uint      `json:"person_id,omitempty"`
+	OrgID       uint      `json:"org_id,omitempty"`
+	StageID     uint      `json:"stage_id,omitempty"`
+	Status      string    `json:"status,omitempty"`
+	Probability uint      `json:"probability,omitempty"`
+	LostReason  string    `json:"lost_reason,omitempty"`
+	AddTime     Timestamp `json:"add_time,omitempty"`
+	VisibleTo   VisibleTo `json:"visible_to,omitempty"`
+
+	CustomFields map[string]interface{} `json:"-"`
+}
+
+func (d DealCreateOptions) MarshalJSON() ([]byte, error) {
+	fields := map[string]interface{}{}
+	for k, v := range d.CustomFields {
+		fields[k] = v
+	}
+
+	if d.Title != "" {
+		fields["title"] = d.Title
+	}
+	if d.Value != "" {
+		fields["value"] = d.Value
+	}
+	if d.Currency != "" {
+		fields["currency"] = d.Currency
+	}
+	if d.UserID != 0 {
+		fields["user_id"] = d.UserID
+	}
+	if d.PersonID != 0 {
+		fields["person_id"] = d.PersonID
+	}
+	if d.OrgID != 0 {
+		fields["org_id"] = d.OrgID
+	}
+	if d.StageID != 0 {
+		fields["stage_id"] = d.StageID
+	}
+	if d.Status != "" {
+		fields["status"] = d.Status
+	}
+	if d.Probability != 0 {
+		fields["probability"] = d.Probability
+	}
+	if d.LostReason != "" {
+		fields["lost_reason"] = d.LostReason
+	}
+	if !d.AddTime.IsZero() {
+		fields["add_time"] = d.AddTime.FormatFull()
+	}
+	if d.VisibleTo != 0 {
+		fields["visible_to"] = d.VisibleTo
+	}
+
+	return json.Marshal(fields)
 }
 
 // Create a new deal.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/post_deals
 func (s *DealService) Create(ctx context.Context, opt *DealCreateOptions) (*DealResponse, *Response, error) {
-	req, err := s.client.NewRequest(http.MethodPost, "/deals", nil, struct {
-		Title               string    `json:"title"`
-		Value               string    `json:"value"`
-		Currency            string    `json:"currency"`
-		UserID              uint      `json:"user_id"`
-		PersonID            uint      `json:"person_id"`
-		OrgID               uint      `json:"org_id"`
-		StageID             uint      `json:"stage_id"`
-		Status              string    `json:"status"`
-		Probability         uint      `json:"probability"`
-		LostReason          string    `json:"lost_reason"`
-		AddTime             string    `json:"add_time"`
-		VisibleTo           VisibleTo `json:"visible_to"`
-		RequirementAnalysis string    `json:"56d3d40c37c0db60fff576ae73ba2fea0d58dc09"`
-		WantedStartTime     string    `json:"a3114acce61bb930180af173b395d76f42af8794"`
-		TemporaryLink       string    `json:"4fe88fad67d8dcbc17d18d9ee1faac55122249fd,omitempty"`
-		LeadSource          uint      `json:"5d4fbabc9b032aeb3df515d9c66994d6892ee062,omitempty"`
-	}{
-		opt.Title,
-		opt.Value,
-		opt.Currency,
-		opt.UserID,
-		opt.PersonID,
-		opt.OrgID,
-		opt.StageID,
-		opt.Status,
-		opt.Probability,
-		opt.LostReason,
-		opt.AddTime.FormatFull(),
-		opt.VisibleTo,
-		opt.RequirementAnalysis,
-		opt.WantedStartTime.Format(),
-		opt.TemporaryLink,
-		opt.LeadSource,
-	})
+	req, err := s.client.NewRequest(http.MethodPost, "/deals", nil, opt)
 
 	if err != nil {
 		return nil, nil, err
