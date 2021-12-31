@@ -246,7 +246,7 @@ func (p PersonCreateOptions) MarshalJSON() ([]byte, error) {
 		fields["visible_to"] = p.VisibleTo
 	}
 	if !p.AddTime.IsZero() {
-		fields["add_time"] = p.AddTime
+		fields["add_time"] = p.AddTime.FormatFull()
 	}
 	if p.Label != 0 {
 		fields["label"] = p.Label
@@ -259,28 +259,7 @@ func (p PersonCreateOptions) MarshalJSON() ([]byte, error) {
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/post_persons
 func (s *PersonsService) Create(ctx context.Context, opt *PersonCreateOptions) (*PersonResponse, *Response, error) {
-	payload := struct {
-		Name      string    `json:"name,omitempty"`
-		OwnerID   uint      `json:"owner_id,omitempty"`
-		OrgID     uint      `json:"org_id,omitempty"`
-		Email     string    `json:"email,omitempty"`
-		Phone     string    `json:"phone,omitempty"`
-		Label     uint      `json:"label,omitempty"`
-		VisibleTo VisibleTo `json:"visible_to,omitempty"`
-		AddTime   string    `json:"add_time,omitempty"`
-	}{
-		Name:      opt.Name,
-		OwnerID:   opt.OwnerID,
-		OrgID:     opt.OrgID,
-		Email:     opt.Email,
-		Phone:     opt.Phone,
-		Label:     opt.Label,
-		VisibleTo: opt.VisibleTo,
-	}
-	if !opt.AddTime.Time.IsZero() {
-		payload.AddTime = opt.AddTime.FormatFull()
-	}
-	req, err := s.client.NewRequest(http.MethodPost, "/persons", nil, payload)
+	req, err := s.client.NewRequest(http.MethodPost, "/persons", nil, opt)
 
 	if err != nil {
 		return nil, nil, err
