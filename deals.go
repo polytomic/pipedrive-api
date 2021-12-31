@@ -307,15 +307,20 @@ func (d DealsUpdateOptions) MarshalJSON() ([]byte, error) {
 
 // Update a deal.
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/put_deals_id
-func (s *DealService) Update(ctx context.Context, id int, opt *DealsUpdateOptions) (*Response, error) {
+func (s *DealService) Update(ctx context.Context, id int, opt *DealsUpdateOptions) (*DealResponse, *Response, error) {
 	uri := fmt.Sprintf("/deals/%v", id)
 	req, err := s.client.NewRequest(http.MethodPut, uri, nil, opt)
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return s.client.Do(ctx, req, nil)
+	var updated *DealResponse
+	resp, err := s.client.Do(ctx, req, &updated)
+	if err != nil {
+		return nil, nil, nil
+	}
+	return updated, resp, nil
 }
 
 // DeleteFollower of a deal.
