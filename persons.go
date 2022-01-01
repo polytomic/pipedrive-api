@@ -142,7 +142,7 @@ type PersonSearchParams struct {
 	Term           string   `url:"term,omitempty"`
 	Fields         []string `url:"fields,omitempty,comma"`
 	ExactMatch     bool     `url:"exact_match,omitempty"`
-	OgranizationID int      `url:"ogranization_id,omitempty"`
+	OrganizationID int      `url:"organization_id,omitempty"`
 	IncludeFields  string   `url:"include_fields,omitempty"`
 	Start          int      `url:"start,omitempty"`
 	Limit          int      `url:"limit,omitempty"`

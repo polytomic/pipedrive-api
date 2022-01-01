@@ -206,6 +206,51 @@ func (s *DealService) List(ctx context.Context, filterID int) (*DealsResponse, *
 	return record, resp, nil
 }
 
+type DealSearchParams struct {
+	Term           string   `url:"term,omitempty"`
+	Fields         []string `url:"fields,omitempty,comma"`
+	ExactMatch     bool     `url:"exact_match,omitempty"`
+	OrganizationID int      `url:"organization_id,omitempty"`
+	PersonID       int      `url:"person_id,omitempty"`
+	Status         string   `url:"status,omitempty"`
+	IncludeFields  string   `url:"include_fields,omitempty"`
+	Start          int      `url:"start,omitempty"`
+	Limit          int      `url:"limit,omitempty"`
+}
+
+type DealSearchResult struct {
+	ResultScore float64
+	Item        Deal
+}
+
+type DealsSearchResponse struct {
+	Success bool `json:"success"`
+	Data    struct {
+		Items []DealSearchResult `json:"items"`
+	} `json:"data"`
+	AdditionalData AdditionalData `json:"additional_data"`
+}
+
+// Search for deal(s)
+//
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/Deals#searchDeals
+func (s *DealService) Search(ctx context.Context, searchParams DealSearchParams) (*DealsSearchResponse, *Response, error) {
+	req, err := s.client.NewRequest(http.MethodGet, "/deals/search", searchParams, nil)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response *DealsSearchResponse
+	resp, err := s.client.Do(ctx, req, &response)
+
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response, resp, nil
+}
+
 // Duplicate a deal.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Deals/post_deals_id_duplicate
