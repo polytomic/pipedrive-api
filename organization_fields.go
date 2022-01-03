@@ -19,7 +19,7 @@ type OrganizationField struct {
 	Name               string      `json:"name"`
 	OrderNr            int         `json:"order_nr,omitempty"`
 	PicklistData       interface{} `json:"picklist_data,omitempty"`
-	FieldType          string      `json:"field_type"`
+	FieldType          FieldType   `json:"field_type"`
 	AddTime            string      `json:"add_time,omitempty"`
 	UpdateTime         string      `json:"update_time,omitempty"`
 	ActiveFlag         bool        `json:"active_flag"`
@@ -34,11 +34,8 @@ type OrganizationField struct {
 	Link               string      `json:"link,omitempty"`
 	MandatoryFlag      bool        `json:"mandatory_flag"`
 	DisplayField       string      `json:"display_field,omitempty"`
-	Options            []struct {
-		ID    int    `json:"id"`
-		Label string `json:"label"`
-	} `json:"options,omitempty"`
-	IsSubfield bool `json:"is_subfield,omitempty"`
+	Options            []Option    `json:"options,omitempty"`
+	IsSubfield         bool        `json:"is_subfield,omitempty"`
 }
 
 func (of OrganizationField) String() string {

@@ -2,6 +2,7 @@ package pipedrive
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -112,6 +113,48 @@ func (s *OrganizationsService) List(ctx context.Context) (*OrganizationsResponse
 	return record, resp, nil
 }
 
+type OrganizationSearchParams struct {
+	Term       string   `url:"term,omitempty"`
+	Fields     []string `url:"fields,omitempty,comma"`
+	ExactMatch bool     `url:"exact_match,omitempty"`
+	Status     string   `url:"status,omitempty"`
+	Start      int      `url:"start,omitempty"`
+	Limit      int      `url:"limit,omitempty"`
+}
+
+type OrganizationSearchResult struct {
+	ResultScore float64
+	Item        Organization
+}
+
+type OrganizationsSearchResponse struct {
+	Success bool `json:"success"`
+	Data    struct {
+		Items []OrganizationSearchResult `json:"items"`
+	} `json:"data"`
+	AdditionalData AdditionalData `json:"additional_data"`
+}
+
+// Search for Organization(s)
+//
+// Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/Organizations#searchOrganizations
+func (s *OrganizationsService) Search(ctx context.Context, searchParams OrganizationSearchParams) (*OrganizationsSearchResponse, *Response, error) {
+	req, err := s.client.NewRequest(http.MethodGet, "/organizations/search", searchParams, nil)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response *OrganizationsSearchResponse
+	resp, err := s.client.Do(ctx, req, &response)
+
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response, resp, nil
+}
+
 // OrganizationUpdateOptions specifices the optional parameters to the
 // OrganizationUpdateOptions.Update method.
 type OrganizationUpdateOptions struct {
@@ -119,7 +162,30 @@ type OrganizationUpdateOptions struct {
 	OwnerID   uint      `json:"owner_id,omitempty"`
 	VisibleTo VisibleTo `json:"visible_to,omitempty"`
 	Address   string    `json:"address,omitempty"`
-	Phone     string    `json:"3eb8874b7a3c9f3fe4f5b6435d4d009b15ec0c77,omitempty"`
+
+	CustomFields map[string]interface{} `json:"-"`
+}
+
+func (d OrganizationUpdateOptions) MarshalJSON() ([]byte, error) {
+	fields := map[string]interface{}{}
+	for k, v := range d.CustomFields {
+		fields[k] = v
+	}
+
+	if d.Name != "" {
+		fields["name"] = d.Name
+	}
+	if d.OwnerID != 0 {
+		fields["owner_id"] = d.OwnerID
+	}
+	if d.Address != "" {
+		fields["address"] = d.Address
+	}
+	if d.VisibleTo != 0 {
+		fields["visible_to"] = d.VisibleTo
+	}
+
+	return json.Marshal(fields)
 }
 
 // Update a specific person.
@@ -220,25 +286,37 @@ type OrganizationCreateOptions struct {
 	VisibleTo VisibleTo `json:"visible_to"`
 	AddTime   Timestamp `json:"add_time"`
 	Label     uint      `json:"label"`
+
+	CustomFields map[string]interface{} `json:"-"`
+}
+
+func (d OrganizationCreateOptions) MarshalJSON() ([]byte, error) {
+	fields := map[string]interface{}{}
+	for k, v := range d.CustomFields {
+		fields[k] = v
+	}
+
+	if d.Name != "" {
+		fields["name"] = d.Name
+	}
+	if d.OwnerID != 0 {
+		fields["owner_id"] = d.OwnerID
+	}
+	if !d.AddTime.IsZero() {
+		fields["add_time"] = d.AddTime.FormatFull()
+	}
+	if d.VisibleTo != 0 {
+		fields["visible_to"] = d.VisibleTo
+	}
+
+	return json.Marshal(fields)
 }
 
 // Create a new organizations.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Organizations/post_organizations
 func (s *OrganizationsService) Create(ctx context.Context, opt *OrganizationCreateOptions) (*OrganizationResponse, *Response, error) {
-	req, err := s.client.NewRequest(http.MethodPost, "/organizations", nil, struct {
-		Name      string    `json:"name"`
-		OwnerID   uint      `json:"owner_id"`
-		Label     uint      `json:"label"`
-		VisibleTo VisibleTo `json:"visible_to"`
-		AddTime   string    `json:"add_time"`
-	}{
-		opt.Name,
-		opt.OwnerID,
-		opt.Label,
-		opt.VisibleTo,
-		opt.AddTime.FormatFull(),
-	})
+	req, err := s.client.NewRequest(http.MethodPost, "/organizations", nil, opt)
 
 	if err != nil {
 		return nil, nil, err
