@@ -20,13 +20,13 @@ type Organization struct {
 	ID        int `json:"id"`
 	CompanyID int `json:"company_id"`
 	OwnerID   struct {
-		ID         int    `json:"id"`
-		Name       string `json:"name"`
-		Email      string `json:"email"`
-		HasPic     int    `json:"has_pic"`
-		PicHash    string `json:"pic_hash"`
-		ActiveFlag bool   `json:"active_flag"`
-		Value      int    `json:"value"`
+		ID         int         `json:"id"`
+		Name       string      `json:"name"`
+		Email      string      `json:"email"`
+		HasPic     interface{} `json:"has_pic"`
+		PicHash    string      `json:"pic_hash"`
+		ActiveFlag bool        `json:"active_flag"`
+		Value      int         `json:"value"`
 	} `json:"owner_id"`
 	Name                            string                 `json:"name"`
 	OpenDealsCount                  int                    `json:"open_deals_count"`
@@ -53,7 +53,7 @@ type Organization struct {
 	FirstChar                       string                 `json:"first_char"`
 	UpdateTime                      string                 `json:"update_time"`
 	AddTime                         string                 `json:"add_time"`
-	VisibleTo                       string                 `json:"visible_to"`
+	VisibleTo                       interface{}            `json:"visible_to"`
 	NextActivityDate                string                 `json:"next_activity_date"`
 	NextActivityTime                interface{}            `json:"next_activity_time"`
 	NextActivityID                  int                    `json:"next_activity_id"`

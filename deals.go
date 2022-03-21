@@ -19,22 +19,22 @@ type DealService service
 type Deal struct {
 	ID            int `json:"id"`
 	CreatorUserID *struct {
-		ID         int    `json:"id"`
-		Name       string `json:"name"`
-		Email      string `json:"email"`
-		HasPic     int    `json:"has_pic"`
-		PicHash    string `json:"pic_hash"`
-		ActiveFlag bool   `json:"active_flag"`
-		Value      int    `json:"value"`
+		ID         int         `json:"id"`
+		Name       string      `json:"name"`
+		Email      string      `json:"email"`
+		HasPic     interface{} `json:"has_pic"`
+		PicHash    string      `json:"pic_hash"`
+		ActiveFlag bool        `json:"active_flag"`
+		Value      int         `json:"value"`
 	} `json:"creator_user_id"`
 	UserID *struct {
-		ID         int    `json:"id"`
-		Name       string `json:"name"`
-		Email      string `json:"email"`
-		HasPic     int    `json:"has_pic"`
-		PicHash    string `json:"pic_hash"`
-		ActiveFlag bool   `json:"active_flag"`
-		Value      int    `json:"value"`
+		ID         int         `json:"id"`
+		Name       string      `json:"name"`
+		Email      string      `json:"email"`
+		HasPic     interface{} `json:"has_pic"`
+		PicHash    string      `json:"pic_hash"`
+		ActiveFlag bool        `json:"active_flag"`
+		Value      int         `json:"value"`
 	} `json:"user_id"`
 	PersonID *struct {
 		Name  string `json:"name"`
@@ -73,7 +73,7 @@ type Deal struct {
 	LastActivityID           int                    `json:"last_activity_id"`
 	LastActivityDate         string                 `json:"last_activity_date"`
 	LostReason               string                 `json:"lost_reason"`
-	VisibleTo                string                 `json:"visible_to"`
+	VisibleTo                interface{}            `json:"visible_to"`
 	CloseTime                string                 `json:"close_time"`
 	PipelineID               int                    `json:"pipeline_id"`
 	WonTime                  interface{}            `json:"won_time"`
@@ -245,8 +245,8 @@ type DealSearchParams struct {
 }
 
 type DealSearchResult struct {
-	ResultScore float64
-	Item        Deal
+	ResultScore float64 `json:"result_score"`
+	Item        Deal    `json:"item"`
 }
 
 type DealsSearchResponse struct {
@@ -389,7 +389,7 @@ func (s *DealService) Update(ctx context.Context, id int, opt *DealsUpdateOption
 	var updated *DealResponse
 	resp, err := s.client.Do(ctx, req, &updated)
 	if err != nil {
-		return nil, nil, nil
+		return nil, resp, err
 	}
 	return updated, resp, nil
 }

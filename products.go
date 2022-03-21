@@ -22,15 +22,15 @@ type Product struct {
 	ActiveFlag bool        `json:"active_flag"`
 	Selectable bool        `json:"selectable"`
 	FirstChar  string      `json:"first_char"`
-	VisibleTo  string      `json:"visible_to"`
+	VisibleTo  interface{} `json:"visible_to"`
 	OwnerID    struct {
-		ID         int    `json:"id"`
-		Name       string `json:"name"`
-		Email      string `json:"email"`
-		HasPic     bool   `json:"has_pic"`
-		PicHash    string `json:"pic_hash"`
-		ActiveFlag bool   `json:"active_flag"`
-		Value      int    `json:"value"`
+		ID         int         `json:"id"`
+		Name       string      `json:"name"`
+		Email      string      `json:"email"`
+		HasPic     interface{} `json:"has_pic"`
+		PicHash    string      `json:"pic_hash"`
+		ActiveFlag bool        `json:"active_flag"`
+		Value      int         `json:"value"`
 	} `json:"owner_id"`
 	FilesCount     interface{} `json:"files_count"`
 	FollowersCount int         `json:"followers_count"`
