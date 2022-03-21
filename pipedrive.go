@@ -256,7 +256,7 @@ func (c *Client) Do(ctx context.Context, request *http.Request, v interface{}) (
 		return response, nil
 	}
 
-	return response, nil
+	return response, err
 }
 
 func (c *Client) createRequestUrl(path string, opt interface{}) (string, error) {

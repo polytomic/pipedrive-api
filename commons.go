@@ -8,7 +8,13 @@ const (
 type Pagination struct {
 	Start                 int  `json:"start"`
 	Limit                 int  `json:"limit"`
+	NextStart             int  `json:"next_start"`
 	MoreItemsInCollection bool `json:"more_items_in_collection"`
+}
+
+type PaginationOptions struct {
+	Start int `url:"start,omitempty"`
+	Limit int `url:"limit,omitempty"`
 }
 
 type AdditionalData struct {
@@ -89,21 +95,26 @@ const (
 type FieldType string
 
 const (
-	FieldTypeVarchar     FieldType = "varchar"
-	FieldTypeVarcharAuto FieldType = "varchar_auto"
-	FieldTypeText        FieldType = "text"
-	FieldTypeDouble      FieldType = "double"
-	FieldTypeMonetary    FieldType = "monetary"
-	FieldTypeDate        FieldType = "date"
-	FieldTypeSet         FieldType = "set"
-	FieldTypeEnum        FieldType = "enum"
-	FieldTypeUser        FieldType = "user"
-	FieldTypeOrg         FieldType = "org"
-	FieldTypePeople      FieldType = "people"
-	FieldTypePhone       FieldType = "phone"
-	FieldTypeTime        FieldType = "time"
-	FieldTypeTimerange   FieldType = "timerange"
-	FieldTypeDaterange   FieldType = "daterange"
+	FieldTypeVarchar        FieldType = "varchar"
+	FieldTypeVarcharAuto    FieldType = "varchar_auto"
+	FieldTypeText           FieldType = "text"
+	FieldTypeDouble         FieldType = "double"
+	FieldTypeMonetary       FieldType = "monetary"
+	FieldTypeDate           FieldType = "date"
+	FieldTypeSet            FieldType = "set"
+	FieldTypeEnum           FieldType = "enum"
+	FieldTypeUser           FieldType = "user"
+	FieldTypeOrg            FieldType = "org"
+	FieldTypePeople         FieldType = "people"
+	FieldTypePhone          FieldType = "phone"
+	FieldTypeTime           FieldType = "time"
+	FieldTypeTimerange      FieldType = "timerange"
+	FieldTypeDaterange      FieldType = "daterange"
+	FieldTypeInt            FieldType = "int"
+	FieldTypeStatus         FieldType = "status"
+	FieldTypeVarcharOptions FieldType = "varchar_options"
+	FieldTypeAddress        FieldType = "address"
+	FieldTypeStage          FieldType = "stage"
 )
 
 // Visiblity
@@ -128,6 +139,6 @@ type SearchOptions struct {
 }
 
 type Option struct {
-	ID    int    `json:"id"`
-	Label string `json:"label"`
+	ID    interface{} `json:"id"` //  int or string
+	Label string      `json:"label"`
 }

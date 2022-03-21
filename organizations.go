@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"reflect"
+	"strings"
 )
 
 // OrganizationsService handles organization related
@@ -21,57 +23,85 @@ type Organization struct {
 		ID         int    `json:"id"`
 		Name       string `json:"name"`
 		Email      string `json:"email"`
-		HasPic     bool   `json:"has_pic"`
+		HasPic     int    `json:"has_pic"`
 		PicHash    string `json:"pic_hash"`
 		ActiveFlag bool   `json:"active_flag"`
 		Value      int    `json:"value"`
 	} `json:"owner_id"`
-	Name                            string      `json:"name"`
-	OpenDealsCount                  int         `json:"open_deals_count"`
-	RelatedOpenDealsCount           int         `json:"related_open_deals_count"`
-	ClosedDealsCount                int         `json:"closed_deals_count"`
-	RelatedClosedDealsCount         int         `json:"related_closed_deals_count"`
-	EmailMessagesCount              int         `json:"email_messages_count"`
-	PeopleCount                     int         `json:"people_count"`
-	ActivitiesCount                 int         `json:"activities_count"`
-	DoneActivitiesCount             int         `json:"done_activities_count"`
-	UndoneActivitiesCount           int         `json:"undone_activities_count"`
-	ReferenceActivitiesCount        int         `json:"reference_activities_count"`
-	FilesCount                      int         `json:"files_count"`
-	NotesCount                      int         `json:"notes_count"`
-	FollowersCount                  int         `json:"followers_count"`
-	WonDealsCount                   int         `json:"won_deals_count"`
-	RelatedWonDealsCount            int         `json:"related_won_deals_count"`
-	LostDealsCount                  int         `json:"lost_deals_count"`
-	RelatedLostDealsCount           int         `json:"related_lost_deals_count"`
-	ActiveFlag                      bool        `json:"active_flag"`
-	CategoryID                      interface{} `json:"category_id"`
-	PictureID                       interface{} `json:"picture_id"`
-	CountryCode                     interface{} `json:"country_code"`
-	FirstChar                       string      `json:"first_char"`
-	UpdateTime                      string      `json:"update_time"`
-	AddTime                         string      `json:"add_time"`
-	VisibleTo                       string      `json:"visible_to"`
-	NextActivityDate                string      `json:"next_activity_date"`
-	NextActivityTime                interface{} `json:"next_activity_time"`
-	NextActivityID                  int         `json:"next_activity_id"`
-	LastActivityID                  int         `json:"last_activity_id"`
-	LastActivityDate                string      `json:"last_activity_date"`
-	TimelineLastActivityTime        interface{} `json:"timeline_last_activity_time"`
-	TimelineLastActivityTimeByOwner interface{} `json:"timeline_last_activity_time_by_owner"`
-	Address                         string      `json:"address"`
-	AddressSubpremise               string      `json:"address_subpremise"`
-	AddressStreetNumber             string      `json:"address_street_number"`
-	AddressRoute                    string      `json:"address_route"`
-	AddressSublocality              string      `json:"address_sublocality"`
-	AddressLocality                 string      `json:"address_locality"`
-	AddressAdminAreaLevel1          string      `json:"address_admin_area_level_1"`
-	AddressAdminAreaLevel2          string      `json:"address_admin_area_level_2"`
-	AddressCountry                  string      `json:"address_country"`
-	AddressPostalCode               string      `json:"address_postal_code"`
-	AddressFormattedAddress         string      `json:"address_formatted_address"`
-	OwnerName                       string      `json:"owner_name"`
-	CcEmail                         string      `json:"cc_email"`
+	Name                            string                 `json:"name"`
+	OpenDealsCount                  int                    `json:"open_deals_count"`
+	RelatedOpenDealsCount           int                    `json:"related_open_deals_count"`
+	ClosedDealsCount                int                    `json:"closed_deals_count"`
+	RelatedClosedDealsCount         int                    `json:"related_closed_deals_count"`
+	EmailMessagesCount              int                    `json:"email_messages_count"`
+	PeopleCount                     int                    `json:"people_count"`
+	ActivitiesCount                 int                    `json:"activities_count"`
+	DoneActivitiesCount             int                    `json:"done_activities_count"`
+	UndoneActivitiesCount           int                    `json:"undone_activities_count"`
+	ReferenceActivitiesCount        int                    `json:"reference_activities_count"`
+	FilesCount                      int                    `json:"files_count"`
+	NotesCount                      int                    `json:"notes_count"`
+	FollowersCount                  int                    `json:"followers_count"`
+	WonDealsCount                   int                    `json:"won_deals_count"`
+	RelatedWonDealsCount            int                    `json:"related_won_deals_count"`
+	LostDealsCount                  int                    `json:"lost_deals_count"`
+	RelatedLostDealsCount           int                    `json:"related_lost_deals_count"`
+	ActiveFlag                      bool                   `json:"active_flag"`
+	CategoryID                      interface{}            `json:"category_id"`
+	PictureID                       interface{}            `json:"picture_id"`
+	CountryCode                     interface{}            `json:"country_code"`
+	FirstChar                       string                 `json:"first_char"`
+	UpdateTime                      string                 `json:"update_time"`
+	AddTime                         string                 `json:"add_time"`
+	VisibleTo                       string                 `json:"visible_to"`
+	NextActivityDate                string                 `json:"next_activity_date"`
+	NextActivityTime                interface{}            `json:"next_activity_time"`
+	NextActivityID                  int                    `json:"next_activity_id"`
+	LastActivityID                  int                    `json:"last_activity_id"`
+	LastActivityDate                string                 `json:"last_activity_date"`
+	TimelineLastActivityTime        interface{}            `json:"timeline_last_activity_time"`
+	TimelineLastActivityTimeByOwner interface{}            `json:"timeline_last_activity_time_by_owner"`
+	Address                         string                 `json:"address"`
+	AddressSubpremise               string                 `json:"address_subpremise"`
+	AddressStreetNumber             string                 `json:"address_street_number"`
+	AddressRoute                    string                 `json:"address_route"`
+	AddressSublocality              string                 `json:"address_sublocality"`
+	AddressLocality                 string                 `json:"address_locality"`
+	AddressAdminAreaLevel1          string                 `json:"address_admin_area_level_1"`
+	AddressAdminAreaLevel2          string                 `json:"address_admin_area_level_2"`
+	AddressCountry                  string                 `json:"address_country"`
+	AddressPostalCode               string                 `json:"address_postal_code"`
+	AddressFormattedAddress         string                 `json:"address_formatted_address"`
+	OwnerName                       string                 `json:"owner_name"`
+	CcEmail                         string                 `json:"cc_email"`
+	CustomFields                    map[string]interface{} `json:"-"`
+}
+
+type _Org Organization
+
+func (o *Organization) UnmarshalJSON(b []byte) error {
+	obj := _Org{}
+	err := json.Unmarshal(b, &obj)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(b, &(obj.CustomFields))
+	if err != nil {
+		return err
+	}
+
+	typ := reflect.TypeOf(obj)
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)
+		jsonTag := strings.Split(field.Tag.Get("json"), ",")[0]
+		if jsonTag != "" && jsonTag != "-" {
+			delete(obj.CustomFields, jsonTag)
+		}
+	}
+
+	*o = Organization(obj)
+
+	return nil
 }
 
 func (o Organization) String() string {
@@ -92,11 +122,20 @@ type OrganizationResponse struct {
 	AdditionalData AdditionalData `json:"additional_data,omitempty"`
 }
 
+type OrganizationsListOptions struct {
+	UserID    int    `url:"user_id,omitempty"`
+	FilterID  int    `url:"filter_id,omitempty"`
+	FirstChar string `url:"first_char,omitempty"`
+	Start     int    `url:"start,omitempty"`
+	Limit     int    `url:"limit,omitempty"`
+	Sort      string `url:"sort,omitempty"`
+}
+
 // List all organizations.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Organizations/get_organizations
-func (s *OrganizationsService) List(ctx context.Context) (*OrganizationsResponse, *Response, error) {
-	req, err := s.client.NewRequest(http.MethodGet, "/organizations", nil, nil)
+func (s *OrganizationsService) List(ctx context.Context, opts *OrganizationsListOptions) (*OrganizationsResponse, *Response, error) {
+	req, err := s.client.NewRequest(http.MethodGet, "/organizations", opts, nil)
 
 	if err != nil {
 		return nil, nil, err

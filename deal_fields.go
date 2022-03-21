@@ -34,7 +34,7 @@ type DealField struct {
 	SortableFlag              bool        `json:"sortable_flag,omitempty"`
 	UseField                  string      `json:"use_field,omitempty"`
 	Link                      string      `json:"link,omitempty"`
-	MandatoryFlag             bool        `json:"mandatory_flag"`
+	MandatoryFlag             interface{} `json:"mandatory_flag"`
 	IsSubfield                bool        `json:"is_subfield,omitempty"`
 	Options                   []Option    `json:"options,omitempty"`
 	BulkEditAllowedConditions struct {
@@ -63,8 +63,8 @@ type DealFieldResponse struct {
 // List all deal fields.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/DealFields/get_dealFields
-func (s *DealFieldsService) List(ctx context.Context) (*DealFieldsResponse, *Response, error) {
-	req, err := s.client.NewRequest(http.MethodGet, "/dealFields", nil, nil)
+func (s *DealFieldsService) List(ctx context.Context, opts *PaginationOptions) (*DealFieldsResponse, *Response, error) {
+	req, err := s.client.NewRequest(http.MethodGet, "/dealFields", opts, nil)
 
 	if err != nil {
 		return nil, nil, err

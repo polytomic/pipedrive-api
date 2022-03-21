@@ -57,8 +57,8 @@ type PersonFieldResponse struct {
 // List all person fields.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/PersonFields/get_personFields
-func (s *PersonFieldsService) List(ctx context.Context) (*PersonFieldsResponse, *Response, error) {
-	req, err := s.client.NewRequest(http.MethodGet, "/personFields", nil, nil)
+func (s *PersonFieldsService) List(ctx context.Context, opts *PaginationOptions) (*PersonFieldsResponse, *Response, error) {
+	req, err := s.client.NewRequest(http.MethodGet, "/personFields", opts, nil)
 
 	if err != nil {
 		return nil, nil, err

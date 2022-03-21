@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"reflect"
+	"strings"
 )
 
 // PersonsService handles activities related
@@ -23,16 +25,16 @@ type Email struct {
 type Person struct {
 	ID        int `json:"id"`
 	CompanyID int `json:"company_id"`
-	OwnerID   struct {
+	OwnerID   *struct {
 		ID         int    `json:"id"`
 		Name       string `json:"name"`
 		Email      string `json:"email"`
-		HasPic     bool   `json:"has_pic"`
+		HasPic     int    `json:"has_pic"`
 		PicHash    string `json:"pic_hash"`
 		ActiveFlag bool   `json:"active_flag"`
 		Value      int    `json:"value"`
 	} `json:"owner_id"`
-	OrgID struct {
+	OrgID *struct {
 		Name        string      `json:"name,omitempty"`
 		PeopleCount int         `json:"people_count,omitempty"`
 		OwnerID     int64       `json:"owner_id,omitempty"`
@@ -65,27 +67,56 @@ type Person struct {
 	ActiveFlag                  bool   `json:"active_flag"`
 	Phone                       []struct {
 		Value   string `json:"value"`
+		Label   string `json:"label"`
 		Primary bool   `json:"primary"`
 	} `json:"phone"`
-	Email                           []Email     `json:"email"`
-	FirstChar                       string      `json:"first_char"`
-	UpdateTime                      string      `json:"update_time"`
-	AddTime                         string      `json:"add_time"`
-	VisibleTo                       string      `json:"visible_to"`
-	PictureID                       interface{} `json:"picture_id"`
-	NextActivityDate                interface{} `json:"next_activity_date"`
-	NextActivityTime                interface{} `json:"next_activity_time"`
-	NextActivityID                  interface{} `json:"next_activity_id"`
-	LastActivityID                  int         `json:"last_activity_id"`
-	LastActivityDate                string      `json:"last_activity_date"`
-	TimelineLastActivityTime        interface{} `json:"timeline_last_activity_time"`
-	TimelineLastActivityTimeByOwner interface{} `json:"timeline_last_activity_time_by_owner"`
-	LastIncomingMailTime            interface{} `json:"last_incoming_mail_time"`
-	LastOutgoingMailTime            interface{} `json:"last_outgoing_mail_time"`
-	OrgName                         string      `json:"org_name"`
-	OwnerName                       string      `json:"owner_name"`
-	CcEmail                         string      `json:"cc_email"`
-	Label                           uint        `json:"label"`
+	Email                           []Email                `json:"email"`
+	FirstChar                       string                 `json:"first_char"`
+	UpdateTime                      string                 `json:"update_time"`
+	AddTime                         string                 `json:"add_time"`
+	VisibleTo                       string                 `json:"visible_to"`
+	PictureID                       interface{}            `json:"picture_id"`
+	NextActivityDate                interface{}            `json:"next_activity_date"`
+	NextActivityTime                interface{}            `json:"next_activity_time"`
+	NextActivityID                  interface{}            `json:"next_activity_id"`
+	LastActivityID                  int                    `json:"last_activity_id"`
+	LastActivityDate                string                 `json:"last_activity_date"`
+	TimelineLastActivityTime        interface{}            `json:"timeline_last_activity_time"`
+	TimelineLastActivityTimeByOwner interface{}            `json:"timeline_last_activity_time_by_owner"`
+	LastIncomingMailTime            interface{}            `json:"last_incoming_mail_time"`
+	LastOutgoingMailTime            interface{}            `json:"last_outgoing_mail_time"`
+	OrgName                         string                 `json:"org_name"`
+	OwnerName                       string                 `json:"owner_name"`
+	CcEmail                         string                 `json:"cc_email"`
+	Label                           uint                   `json:"label"`
+	CustomFields                    map[string]interface{} `json:"-"`
+}
+
+type _Person Person
+
+func (p *Person) UnmarshalJSON(b []byte) error {
+	obj := _Person{}
+	err := json.Unmarshal(b, &obj)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(b, &(obj.CustomFields))
+	if err != nil {
+		return err
+	}
+
+	typ := reflect.TypeOf(obj)
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)
+		jsonTag := strings.Split(field.Tag.Get("json"), ",")[0]
+		if jsonTag != "" && jsonTag != "-" {
+			delete(obj.CustomFields, jsonTag)
+		}
+	}
+
+	*p = Person(obj)
+
+	return nil
 }
 
 func (p Person) String() string {
@@ -117,11 +148,20 @@ type PersonAddFollowerResponse struct {
 	} `json:"data"`
 }
 
+type PersonsListOptions struct {
+	UserID    int    `url:"user_id,omitempty"`
+	FilterID  int    `url:"filter_id,omitempty"`
+	FirstChar string `url:"first_char,omitempty"`
+	Start     int    `url:"start,omitempty"`
+	Limit     int    `url:"limit,omitempty"`
+	Sort      string `url:"sort,omitempty"`
+}
+
 // List all persons.
 //
 // Pipedrive API docs: https://developers.pipedrive.com/docs/api/v1/#!/Persons/get_persons
-func (s *PersonsService) List(ctx context.Context) (*PersonsResponse, *Response, error) {
-	req, err := s.client.NewRequest(http.MethodGet, "/persons", nil, nil)
+func (s *PersonsService) List(ctx context.Context, opts *PersonsListOptions) (*PersonsResponse, *Response, error) {
+	req, err := s.client.NewRequest(http.MethodGet, "/persons", opts, nil)
 
 	if err != nil {
 		return nil, nil, err
