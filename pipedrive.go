@@ -215,12 +215,6 @@ func (c *Client) checkResponse(r *http.Response) error {
 // The provided ctx must be non-nil. If it is canceled or times out,
 // ctx.Err() will be returned.
 func (c *Client) Do(ctx context.Context, request *http.Request, v interface{}) (*Response, error) {
-	if err := c.checkRateLimitBeforeDo(request); err != nil {
-		return &Response{
-			Response: err.Response,
-		}, err
-	}
-
 	resp, err := c.client.Do(request)
 
 	if err != nil {
